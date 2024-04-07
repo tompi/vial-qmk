@@ -31,18 +31,18 @@
       "KC_X",
       "KC_C",
       "KC_V",
-      "LT(5,KC_B)",
+      "KC_B",
       "LT(1,KC_N)",
       "KC_M",
       "KC_COMM",
       "KC_DOT",
       "KC_SLSH",
-      "LT(6,KC_ESC)",
+      "KC_ESC",
       "LT(3,KC_SPC)",
-      "LT(5,KC_TAB)",
+      "KC_TAB",
       "LT(1,KC_DEL)",
       "LT(2,KC_BSPC)",
-      "LT(4,KC_ENT)"
+      "KC_ENT"
     ],
     [
       "KC_VOLU",
