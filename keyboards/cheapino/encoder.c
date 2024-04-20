@@ -1,63 +1,96 @@
 #include "matrix.h"
+#include "rgblight.h"
 #include "quantum.h"
+#include "encoder.h"
 
 #define COL_SHIFTER ((uint16_t)1)
 
-#define ENC_ROW 3
-#define ENC_A_COL 2
-#define ENC_B_COL 4
-#define ENC_BUTTON_COL 0
-
-static bool colABPressed   = false;
+static bool colABpressed = false;
 static bool encoderPressed = false;
-
-void clicked(void) {
-    tap_code(KC_MPLY);
-}
+static uint16_t turns = 0;
+static bool last_turn_clockwise;
 
 void turned(bool clockwise) {
-    if (IS_LAYER_ON(6)) {
-        tap_code(clockwise ? KC_VOLU : KC_VOLD);
+    if (clockwise != last_turn_clockwise) {
+        // Switched way, reset counter
+        last_turn_clockwise = clockwise;
+        turns = 0;
+    }
+    turns++;
+    if (!(turns%ENCODER_RESOLUTION == 0)) {
+        return;
+    }
+
+    encoder_exec_mapping(0, clockwise);
+    //encoder_update_kb(0, clockwise);
+
+    /*
+    if (IS_LAYER_ON(4)) {
+        // clockwise ? rgb_matrix_decrease() : rgb_matrix_increase();
     } else if (IS_LAYER_ON(3)) {
+        tap_code(clockwise ? KC_VOLU : KC_VOLD);
+    } else if (IS_LAYER_ON(2)) {
         tap_code16(clockwise ? LCTL(KC_TAB) : LCTL(LSFT(KC_TAB)));
-    } else if (IS_LAYER_ON(5)) {
-        tap_code16(clockwise ? LGUI(KC_Y) : LGUI(KC_Z));
+    } else if (IS_LAYER_ON(1)) {
+        tap_code(clockwise ? KC_PGDN : KC_PGUP);
     } else {
-        tap_code16(clockwise ? KC_PGDN : KC_PGUP);
+        tap_code(clockwise ? KC_WH_D : KC_WH_U);
+    }
+    */
+}
+
+void blank_column(matrix_row_t current_matrix[], uint8_t col) {
+    uint16_t column_index_bitmask = COL_SHIFTER << col;
+    for (uint8_t row_index = 0; row_index < MATRIX_ROWS-1; row_index++) {
+        current_matrix[row_index] &= ~column_index_bitmask;
     }
 }
 
-void fix_encoder_action(matrix_row_t current_matrix[]) {
-    matrix_row_t encoder_row = current_matrix[ENC_ROW];
+bool is_entire_column_held(matrix_row_t current_matrix[], uint8_t col) {
+    uint16_t column_index_bitmask = COL_SHIFTER << col;
+    for (uint8_t row_index = 0; row_index < MATRIX_ROWS-1; row_index++) {
+        if (!(current_matrix[row_index] & column_index_bitmask)) return false;
+    }
+    return true;
+}
 
-    if (encoder_row & (COL_SHIFTER << ENC_BUTTON_COL)) {
+// Because of a bug in the routing of the cheapino, encoder action
+// triggers entire columns... fix it in software here, assumption is that
+// you never press an entire column, sounds safe?
+void fix_encoder_action(matrix_row_t current_matrix[]) {
+
+    // 7th column means encoder was pressed
+    if (is_entire_column_held(current_matrix, 7)) {
         encoderPressed = true;
+        blank_column(current_matrix, 7);
+        current_matrix[3] |= COL_SHIFTER;
     } else {
+        current_matrix[3] &= ~COL_SHIFTER;
         // Only trigger click on release
         if (encoderPressed) {
             encoderPressed = false;
-            clicked();
         }
     }
 
-    // Check which way the encoder is turned:
-    bool colA = encoder_row & (COL_SHIFTER << ENC_A_COL);
-    bool colB = encoder_row & (COL_SHIFTER << ENC_B_COL);
+    // Now check rotary action:
+    bool colA = is_entire_column_held(current_matrix, 9);
+    bool colB = is_entire_column_held(current_matrix, 11);
 
     if (colA && colB) {
-        colABPressed = true;
+        colABpressed = true;
+        blank_column(current_matrix, 9);
+        blank_column(current_matrix, 11);
     } else if (colA) {
-        if (colABPressed) {
-            // A+B followed by A means clockwise
-            colABPressed = false;
+        if (colABpressed) {
+            colABpressed = false;
             turned(true);
         }
+        blank_column(current_matrix, 9);
     } else if (colB) {
-        if (colABPressed) {
-            // A+B followed by B means counter-clockwise
-            colABPressed = false;
+        if (colABpressed) {
+            colABpressed = false;
             turned(false);
         }
+        blank_column(current_matrix, 11);
     }
-    current_matrix[ENC_ROW] = 0;
 }
