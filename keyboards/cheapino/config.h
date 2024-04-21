@@ -20,10 +20,6 @@
 #define MAX_DEFERRED_EXECUTORS 32
 
 #define DEBOUNCE 5
-#define VIAL_KEYBOARD_UID {0x79, 0xED, 0x40, 0xBB, 0x09, 0x8B, 0xC1, 0x9E}
-// Unlock combo is two inner thumb keys.
-#define VIAL_UNLOCK_COMBO_ROWS { 6, 2 }
-#define VIAL_UNLOCK_COMBO_COLS { 11, 5 }
 
 // How many "tents" should you turn per action
 #define ENCODER_RESOLUTION 1
@@ -34,3 +30,5 @@
 #define ENCODERS_PAD_B { GP13 }
 
 #define ENCODER_MAP_KEY_DELAY 10
+
+
