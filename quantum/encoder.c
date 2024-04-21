@@ -172,7 +172,7 @@ void encoder_init(void) {
 }
 
 #ifdef ENCODER_MAP_ENABLE
-static void encoder_exec_mapping(uint8_t index, bool clockwise) {
+__attribute__((weak)) void encoder_exec_mapping(uint8_t index, bool clockwise) {
     // The delays below cater for Windows and its wonderful requirements.
     action_exec(clockwise ? MAKE_ENCODER_CW_EVENT(index, true) : MAKE_ENCODER_CCW_EVENT(index, true));
 #    if ENCODER_MAP_KEY_DELAY > 0

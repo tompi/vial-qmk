@@ -3,22 +3,6 @@
 
 #pragma once
 
-/*
- * Feature disable options
- *  These options are also useful to firmware size reduction.
- */
-
-/* disable debug print */
-//#define NO_DEBUG
-
-/* disable print */
-//#define NO_PRINT
-
-/* disable action features */
-//#define NO_ACTION_LAYER
-//#define NO_ACTION_TAPPING
-//#define NO_ACTION_ONESHOT
-
 #define BOTH_SHIFTS_TURNS_ON_CAPS_WORD
 #define WS2812_PIO_USE_PIO1 // Force the usage of PIO1 peripheral, by default the WS2812 implementation uses the PIO0 peripheral
 //#define WS2812_TRST_US 80
@@ -28,7 +12,6 @@
 
 // Pick good defaults for enabling homerow modifiers
 #define TAPPING_TERM 230
-
 
 #define WS2812_DI_PIN GP16 // The pin connected to the data pin of the LEDs
 //#define RGBLIGHT_LED_COUNT 1                     // The number of LEDs connected
@@ -41,3 +24,13 @@
 // Unlock combo is two inner thumb keys.
 #define VIAL_UNLOCK_COMBO_ROWS { 6, 2 }
 #define VIAL_UNLOCK_COMBO_COLS { 11, 5 }
+
+// How many "tents" should you turn per action
+#define ENCODER_RESOLUTION 1
+
+// These are just dummy definitions to make qmk compile
+// // The actual encoder logic is handled manually in encoder.c
+#define ENCODERS_PAD_A { GP12 }
+#define ENCODERS_PAD_B { GP13 }
+
+#define ENCODER_MAP_KEY_DELAY 10

@@ -1,5 +1,7 @@
 #include "matrix.h"
 #include "quantum.h"
+#include "rgblight.h"
+#include "encoder.h"
 
 #define COL_SHIFTER ((uint16_t)1)
 
@@ -9,36 +11,25 @@
 #define ENC_BUTTON_COL 0
 
 static bool colABPressed   = false;
-static bool encoderPressed = false;
-
-void clicked(void) {
-    tap_code(KC_MPLY);
-}
+static uint16_t turns = 0;
+static bool last_turn_clockwise;
 
 void turned(bool clockwise) {
-    if (IS_LAYER_ON(6)) {
-        tap_code(clockwise ? KC_VOLU : KC_VOLD);
-    } else if (IS_LAYER_ON(3)) {
-        tap_code16(clockwise ? LCTL(KC_TAB) : LCTL(LSFT(KC_TAB)));
-    } else if (IS_LAYER_ON(5)) {
-        tap_code16(clockwise ? LGUI(KC_Y) : LGUI(KC_Z));
-    } else {
-        tap_code16(clockwise ? KC_PGDN : KC_PGUP);
+	if (clockwise != last_turn_clockwise) {
+        // Switched way, reset counter
+        last_turn_clockwise = clockwise;
+        turns = 0;
     }
+    turns++;
+    if (!(turns%ENCODER_RESOLUTION == 0)) {
+        return;
+    }
+
+	encoder_exec_mapping(0, clockwise);
 }
 
 void fix_encoder_action(matrix_row_t current_matrix[]) {
     matrix_row_t encoder_row = current_matrix[ENC_ROW];
-
-    if (encoder_row & (COL_SHIFTER << ENC_BUTTON_COL)) {
-        encoderPressed = true;
-    } else {
-        // Only trigger click on release
-        if (encoderPressed) {
-            encoderPressed = false;
-            clicked();
-        }
-    }
 
     // Check which way the encoder is turned:
     bool colA = encoder_row & (COL_SHIFTER << ENC_A_COL);
@@ -59,5 +50,4 @@ void fix_encoder_action(matrix_row_t current_matrix[]) {
             turned(false);
         }
     }
-    current_matrix[ENC_ROW] = 0;
 }
