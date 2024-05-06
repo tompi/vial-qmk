@@ -7,4 +7,5 @@ VIA_ENABLE = yes
 VIAL_INSECURE = yes
 ENCODER_ENABLE = yes
 SRC += encoder.c
+SRC += ghosting.c
 SRC += matrix.c
