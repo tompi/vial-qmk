@@ -32,3 +32,6 @@
 #define ENCODER_MAP_KEY_DELAY 10
 
 
+#define RGBLIGHT_DEFAULT_HUE 128 // Sets the default hue value, if none has been set
+#define RGBLIGHT_DEFAULT_SAT 128 // Sets the default saturation value, if none has been set
+#define RGBLIGHT_DEFAULT_VAL 32 // Sets the default brightness value, if none has been set
