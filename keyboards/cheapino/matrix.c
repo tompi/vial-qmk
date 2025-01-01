@@ -29,9 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ghosting.h"
 #include "print.h"
 
-// Adjust from default 30 to weigh up for increased time spent ghost-hunting.
-// (the rp2040 does not seem to have any problems with this value...)
-#define MATRIX_IO_DELAY 25
+#define MATRIX_IO_DELAY 30
 
 #define COL_SHIFTER ((uint16_t)1)
 

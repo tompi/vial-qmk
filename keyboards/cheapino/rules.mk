@@ -6,6 +6,7 @@ DEFERRED_EXEC_ENABLE = yes
 VIA_ENABLE = yes
 VIAL_INSECURE = yes
 ENCODER_ENABLE = yes
+KEYBOARD_SHARED_EP = yes
 SRC += encoder.c
 SRC += ghosting.c
 SRC += matrix.c
